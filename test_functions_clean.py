@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Script de test des fonctions sans Streamlit
+Version corrigée et complète
 """
 
 import pandas as pd
@@ -9,6 +10,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+from io import StringIO
 
 def prepare_segmentation_data_test(df):
     """Version test de la fonction de préparation"""
@@ -132,7 +134,7 @@ def test_with_sample_data():
         print("\n🎯 Test clustering...")
         df_clustered, kmeans, X_scaled = perform_clustering_test(df_prepared.copy(), rfm_vars, 4)
         
-        if 'Cluster' in df_clustered.columns:
+        if df_clustered is not None and 'Cluster' in df_clustered.columns:
             print(f"✅ Clustering réussi!")
             cluster_counts = df_clustered['Cluster'].value_counts().sort_index()
             print(f"📊 Distribution des clusters:")
@@ -145,10 +147,13 @@ def test_with_sample_data():
             cluster_profiles = df_clustered.groupby('Cluster')[rfm_vars].mean().round(2)
             print(cluster_profiles)
             
+            return df_clustered
         else:
             print("❌ Clustering échoué")
-    
-    return df_clustered if 'Cluster' in locals() and 'Cluster' in df_clustered.columns else None
+            return None
+    else:
+        print("❌ Aucune variable RFM trouvée")
+        return None
 
 def test_csv_parsing():
     """Test du parsing CSV avec différents délimiteurs"""
@@ -169,7 +174,6 @@ def test_csv_parsing():
     
     # Test point-virgule
     try:
-        from io import StringIO
         df_semicolon = pd.read_csv(StringIO(csv_semicolon), sep=';')
         print(f"✅ CSV point-virgule: {df_semicolon.shape} - Colonnes: {len(df_semicolon.columns)}")
     except Exception as e:
@@ -181,6 +185,17 @@ def test_csv_parsing():
         print(f"✅ CSV virgule: {df_comma.shape} - Colonnes: {len(df_comma.columns)}")
     except Exception as e:
         print(f"❌ Erreur CSV virgule: {e}")
+    
+    # Test auto-détection
+    try:
+        # Simuler la détection automatique
+        test_csv = csv_semicolon
+        df_auto = pd.read_csv(StringIO(test_csv), sep=',')
+        if len(df_auto.columns) == 1:
+            df_auto = pd.read_csv(StringIO(test_csv), sep=';')
+        print(f"✅ Auto-détection: {df_auto.shape} - Colonnes: {len(df_auto.columns)}")
+    except Exception as e:
+        print(f"❌ Erreur auto-détection: {e}")
     
     print("✅ Tests CSV terminés")
 
@@ -201,46 +216,17 @@ def main():
         
         if result is not None:
             print("✅ Tests réussis - Le système est opérationnel")
+            return True
         else:
             print("⚠️ Certains tests ont échoué - Vérifier les logs ci-dessus")
+            return False
             
     except Exception as e:
         print(f"❌ Erreur critique dans les tests: {e}")
         import traceback
         traceback.print_exc()
+        return False
 
 if __name__ == "__main__":
-    main()
-        print(f"✅ CSV virgule: {df_comma.shape} - Colonnes: {len(df_comma.columns)}")
-    except Exception as e:
-        print(f"❌ Erreur CSV virgule: {e}")
-    
-    # Test auto-détection
-    try:
-        # Simuler la détection automatique
-        test_csv = csv_semicolon
-        df_auto = pd.read_csv(StringIO(test_csv), sep=',')
-        if len(df_auto.columns) == 1:
-            df_auto = pd.read_csv(StringIO(test_csv), sep=';')
-        print(f"✅ Auto-détection: {df_auto.shape} - Colonnes: {len(df_auto.columns)}")
-    except Exception as e:
-        print(f"❌ Erreur auto-détection: {e}")
-
-def main():
-    """Fonction principale"""
-    print("🔧 TESTS DES FONCTIONS DASHBOARD")
-    print("=" * 40)
-    
-    test_csv_parsing()
-    result_df = test_with_sample_data()
-    
-    print("\n" + "=" * 40)
-    if result_df is not None:
-        print("✅ TOUS LES TESTS RÉUSSIS!")
-        print("🚀 Le dashboard marketing devrait fonctionner correctement")
-    else:
-        print("⚠️ Certains tests ont échoué")
-    print("=" * 40)
-
-if __name__ == "__main__":
-    main()
+    success = main()
+    exit(0 if success else 1)

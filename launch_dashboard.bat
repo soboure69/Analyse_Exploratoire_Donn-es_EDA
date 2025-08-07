@@ -36,6 +36,6 @@ if not exist "dashboard_fraud.py" (
 
 REM Lancement du dashboard
 echo ✅ Lancement du dashboard...
-streamlit run dashboard_fraud.py --server.port=8501
+"C:\Users\bello\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\Scripts\streamlit.exe" run dashboard_fraud.py --server.port=8501
 
 pause

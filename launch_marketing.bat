@@ -26,6 +26,6 @@ if not exist "dashboard_marketing.py" (
 
 REM Lancement du dashboard marketing
 echo ✅ Lancement du dashboard marketing...
-streamlit run dashboard_marketing.py --server.port=8502
+"C:\Users\bello\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\Scripts\streamlit.exe" run dashboard_marketing.py --server.port=8502
 
 pause
