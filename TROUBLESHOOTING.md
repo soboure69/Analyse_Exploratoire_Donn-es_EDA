@@ -1,21 +1,46 @@
-# 🔧 Guide de Dépannage - Dashboards EDA
+# 🔧 Guide de Dépannage - Dashboards EDA Bancaire & Marketing
 
-## 🚨 Problèmes Courants et Solutions
+[![Version](https://img.shields.io/badge/Version-2.1-blue.svg)](#)
+[![Python](https://img.shields.io/badge/Python-3.8+-green.svg)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.25+-red.svg)](https://streamlit.io)
 
-### 1. Erreur "Cannot convert to numeric" 
+## 🎯 Vue d'Ensemble
 
-**Problème :** Le fichier CSV utilise des points-virgules (`;`) au lieu de virgules (`,`) comme délimiteur.
+Ce guide vous aide à résoudre les problèmes courants rencontrés lors de l'utilisation des dashboards interactifs pour l'analyse exploratoire des données bancaires et marketing.
 
-**Solution :**
+## 😨 Problèmes Critiques et Solutions
+
+### 📄 1. Erreurs de Parsing CSV
+
+#### **Problème :** "Cannot convert to numeric" ou colonnes mal séparées
+
+**🔍 Cause :** Délimiteur CSV incorrect (`;` vs `,`)
+
+**⚙️ Solution Automatique :**
+
 ```python
-# Au lieu de :
-df = pd.read_csv("fichier.csv")
-
-# Utilisez :
-df = pd.read_csv("fichier.csv", sep=';')
+# Détection automatique implémentée dans les dashboards
+def detect_delimiter(file_path):
+    with open(file_path, 'r') as f:
+        first_line = f.readline()
+        if ';' in first_line and first_line.count(';') > first_line.count(','):
+            return ';'
+        return ','
 ```
 
-**Dans le dashboard :** Le code a été mis à jour pour détecter automatiquement le délimiteur.
+**🛠️ Solution Manuelle :**
+
+```python
+# Test des délimiteurs
+df_comma = pd.read_csv("fichier.csv", sep=',')
+df_semicolon = pd.read_csv("fichier.csv", sep=';')
+
+# Choisir celui avec le plus de colonnes
+if len(df_semicolon.columns) > len(df_comma.columns):
+    df = df_semicolon
+else:
+    df = df_comma
+```
 
 ### 2. Erreur "'list' object has no attribute 'sum'"
 
